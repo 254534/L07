@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/androidProjects/L07/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/androidProjects/L07/app/src/main/res/layout/activity_play_video.xml" value="0.27445652173913043" />
         <entry key="..\:/androidProjects/L07/app/src/main/res/layout/activity_record_play.xml" value="0.27445652173913043" />
+        <entry key="..\:/androidProjects/L07/app/src/main/res/layout/activity_record_video.xml" value="0.27445652173913043" />
       </map>
     </option>
   </component>

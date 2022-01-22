@@ -6,4 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".RecordPlayActivity">
 
+    <Button
+        android:id="@+id/buttonRecordStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Record Start"
+        app:layout_constraintBottom_toTopOf="@+id/buttonAudioPlayStart"
+        app:layout_constraintEnd_toStartOf="@+id/buttonRecordStop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonRecordStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Record Stop"
+
+        app:layout_constraintBottom_toTopOf="@+id/buttonAudioPlayStop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonRecordStart"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonAudioPlayStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Audio start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonAudioPlayStop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonAudioPlayStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Audio stop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonAudioPlayStart"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
