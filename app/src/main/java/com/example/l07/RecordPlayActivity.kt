@@ -14,19 +14,25 @@ import androidx.core.content.ContextCompat
 import android.os.Environment
 import android.util.Log
 import android.widget.Button
+import android.widget.ProgressBar
 import androidx.core.content.PackageManagerCompat.LOG_TAG
 import java.io.IOException
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import kotlin.concurrent.thread
 
 
 class RecordPlayActivity : AppCompatActivity() {
     lateinit var mediaRecorder: MediaRecorder
-    lateinit var mediaPlayer: MediaPlayer
+    var mediaPlayer: MediaPlayer? = null
     lateinit var fileName: String
     val REQUEST_AUDIO_PERMISSION_CODE = 11
     lateinit var recordStart: Button
     lateinit var recordStop: Button
     lateinit var playStart: Button
     lateinit var playStop: Button
+    lateinit var playPause: Button
+    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,27 +45,57 @@ class RecordPlayActivity : AppCompatActivity() {
             recordStop = findViewById<Button>(R.id.buttonRecordStop)
             playStart = findViewById(R.id.buttonAudioPlayStart)
             playStop = findViewById(R.id.buttonAudioPlayStop)
+            playPause = findViewById(R.id.buttonAudioPlayPause)
+            progressBar = findViewById<ProgressBar>(R.id.progressBarAudio)
+
             recordStop.isEnabled = false
             playStop.isEnabled = false
 
-            findViewById<Button>(R.id.buttonRecordStart).setOnClickListener {
+            recordStart.setOnClickListener {
                 startRecording()
                 recordStart.isEnabled = false
                 recordStop.isEnabled = true
                 playStart.isEnabled = false
             }
-            findViewById<Button>(R.id.buttonRecordStop).setOnClickListener {
+            recordStop.setOnClickListener {
                 stopRecording()
                 recordStart.isEnabled = true
                 recordStop.isEnabled = false
                 playStart.isEnabled = true
             }
 
-            findViewById<Button>(R.id.buttonAudioPlayStart).setOnClickListener {
-                startPlaying()
+            playStart.setOnClickListener {
+                playStart.isEnabled = false
+                playPause.isEnabled = true
+
+                if (mediaPlayer == null) {
+                    startPlaying()
+                }
+                else {
+                    mediaPlayer!!.start()
+                }
+                setupProgressBar()
+                playStop.isEnabled = true
+
+                mediaPlayer!!.setOnCompletionListener {
+                    playStop.isEnabled = false
+                    playStart.isEnabled = true
+                    playPause.isEnabled = false
+                }
             }
-            findViewById<Button>(R.id.buttonAudioPlayStop).setOnClickListener {
+
+            playPause.setOnClickListener {
+                pausePlaying()
+                playPause.isEnabled = false
+                playStart.isEnabled = true
+            }
+
+            playStop.setOnClickListener {
                 stopPlaying()
+                progressBar.progress = 0
+                playStop.isEnabled = false
+                playPause.isEnabled = false
+                playStart.isEnabled = true
             }
 
         }
@@ -92,6 +128,20 @@ class RecordPlayActivity : AppCompatActivity() {
         }
     }
 
+    private fun pausePlaying() {
+        mediaPlayer!!.pause()
+    }
+
+    private fun setupProgressBar() {
+        progressBar.max = mediaPlayer!!.duration
+        progressBar.progress = 0
+        thread(start = true) {
+            while (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+                progressBar.progress = mediaPlayer!!.currentPosition
+            }
+        }
+    }
+
     private fun stopRecording() {
         mediaRecorder.apply {
             stop()
@@ -100,7 +150,10 @@ class RecordPlayActivity : AppCompatActivity() {
     }
 
     private fun stopPlaying() {
-        mediaPlayer.release()
+        mediaPlayer!!.stop()
+        mediaPlayer!!.reset()
+        mediaPlayer!!.release()
+        mediaPlayer = null
     }
 
 

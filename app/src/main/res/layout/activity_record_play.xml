@@ -31,9 +31,9 @@
         android:id="@+id/buttonAudioPlayStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Audio start"
+        android:text="play"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonAudioPlayStop"
+        app:layout_constraintEnd_toStartOf="@+id/buttonAudioPlayPause"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,9 +41,29 @@
         android:id="@+id/buttonAudioPlayStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Audio stop"
+        android:text="stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonAudioPlayStart"
+        app:layout_constraintStart_toEndOf="@+id/buttonAudioPlayPause"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarAudio"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAudioPlayStart" />
+
+    <Button
+        android:id="@+id/buttonAudioPlayPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
