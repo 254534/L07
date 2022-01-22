@@ -21,11 +21,12 @@ import java.io.IOException
 class RecordPlayActivity : AppCompatActivity() {
     lateinit var mediaRecorder: MediaRecorder
     lateinit var mediaPlayer: MediaPlayer
-    var audioDirPath: String? = null
-    var audioFilePath: String? = null
-    var audioFileName = "audio_filename1" + ".3gp"
     lateinit var fileName: String
     val REQUEST_AUDIO_PERMISSION_CODE = 11
+    lateinit var recordStart: Button
+    lateinit var recordStop: Button
+    lateinit var playStart: Button
+    lateinit var playStop: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,38 +35,31 @@ class RecordPlayActivity : AppCompatActivity() {
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            recordStart = findViewById<Button>(R.id.buttonRecordStart)
+            recordStop = findViewById<Button>(R.id.buttonRecordStop)
+            playStart = findViewById(R.id.buttonAudioPlayStart)
+            playStop = findViewById(R.id.buttonAudioPlayStop)
+            recordStop.isEnabled = false
+            playStop.isEnabled = false
 
             findViewById<Button>(R.id.buttonRecordStart).setOnClickListener {
-                mediaRecorder = MediaRecorder().apply {
-                    setAudioSource(MediaRecorder.AudioSource.MIC)
-                    setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-                    setOutputFile(fileName)
-                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                    prepare()
-                    start()
-                }
+                startRecording()
+                recordStart.isEnabled = false
+                recordStop.isEnabled = true
+                playStart.isEnabled = false
             }
             findViewById<Button>(R.id.buttonRecordStop).setOnClickListener {
-                mediaRecorder.apply {
-                    stop()
-                    release()
-                }
+                stopRecording()
+                recordStart.isEnabled = true
+                recordStop.isEnabled = false
+                playStart.isEnabled = true
             }
 
             findViewById<Button>(R.id.buttonAudioPlayStart).setOnClickListener {
-                mediaPlayer = MediaPlayer().apply {
-                    try {
-                        setDataSource(fileName)
-                        prepare()
-                        start()
-                    } catch (e: IOException) {
-                        Log.e(LOG_TAG, "prepare() failed")
-                    }
-                }
+                startPlaying()
             }
-
             findViewById<Button>(R.id.buttonAudioPlayStop).setOnClickListener {
-                mediaPlayer.release()
+                stopPlaying()
             }
 
         }
@@ -74,6 +68,41 @@ class RecordPlayActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_AUDIO_PERMISSION_CODE)
         }
     }
+
+    private fun startRecording() {
+        mediaRecorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setOutputFile(fileName)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            prepare()
+            start()
+        }
+    }
+
+    private fun startPlaying() {
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(fileName)
+                prepare()
+                start()
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "prepare() failed")
+            }
+        }
+    }
+
+    private fun stopRecording() {
+        mediaRecorder.apply {
+            stop()
+            release()
+        }
+    }
+
+    private fun stopPlaying() {
+        mediaPlayer.release()
+    }
+
 
     fun info(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show()
