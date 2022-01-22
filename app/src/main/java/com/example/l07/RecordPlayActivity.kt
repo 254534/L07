@@ -7,18 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.media.MediaPlayer
 import android.media.MediaRecorder
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.os.Environment
 import android.util.Log
-import android.widget.Button
-import android.widget.ProgressBar
 import androidx.core.content.PackageManagerCompat.LOG_TAG
 import java.io.IOException
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.widget.*
 import kotlin.concurrent.thread
 
 
@@ -32,7 +30,7 @@ class RecordPlayActivity : AppCompatActivity() {
     lateinit var playStart: Button
     lateinit var playStop: Button
     lateinit var playPause: Button
-    lateinit var progressBar: ProgressBar
+    lateinit var progressBar: SeekBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +44,36 @@ class RecordPlayActivity : AppCompatActivity() {
             playStart = findViewById(R.id.buttonAudioPlayStart)
             playStop = findViewById(R.id.buttonAudioPlayStop)
             playPause = findViewById(R.id.buttonAudioPlayPause)
-            progressBar = findViewById<ProgressBar>(R.id.progressBarAudio)
+            progressBar = findViewById(R.id.progressBarAudio)
+
+            progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    val currentPos = seekBar!!.progress
+                    val minutes = (currentPos / 60000) % 60
+                    val seconds = (currentPos / 1000) % 60
+                    val milisec = currentPos % 1000
+
+                    val timeString = String.format("%02d:%02d:%03d", minutes, seconds, milisec)
+                    findViewById<TextView>(R.id.textCurrentTime).text = timeString
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    pausePlaying()
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    if(seekBar != null  && mediaPlayer != null) {
+                        mediaPlayer!!.seekTo(seekBar.progress)
+                        mediaPlayer!!.start()
+                        setupProgressBar()
+                    }
+                }
+
+            })
 
             recordStop.isEnabled = false
             playStop.isEnabled = false
@@ -65,9 +92,6 @@ class RecordPlayActivity : AppCompatActivity() {
             }
 
             playStart.setOnClickListener {
-                playStart.isEnabled = false
-                playPause.isEnabled = true
-
                 if (mediaPlayer == null) {
                     startPlaying()
                 }
@@ -75,7 +99,7 @@ class RecordPlayActivity : AppCompatActivity() {
                     mediaPlayer!!.start()
                 }
                 setupProgressBar()
-                playStop.isEnabled = true
+
 
                 mediaPlayer!!.setOnCompletionListener {
                     playStop.isEnabled = false
@@ -133,15 +157,30 @@ class RecordPlayActivity : AppCompatActivity() {
     }
 
     private fun setupProgressBar() {
+        playStart.isEnabled = false
+        playPause.isEnabled = true
+        playStop.isEnabled = true
         progressBar.max = mediaPlayer!!.duration
         progressBar.progress = 0
-        thread(start = true) {
-            while (mediaPlayer != null && mediaPlayer!!.isPlaying) {
-                progressBar.progress = mediaPlayer!!.currentPosition
-            }
-        }
-    }
 
+        Thread(Runnable {
+            var currentPos: Int
+            while (mediaPlayer != null && mediaPlayer!!.isPlaying) {
+                currentPos =  mediaPlayer!!.currentPosition
+                progressBar.progress = currentPos
+
+//                this@RecordPlayActivity.runOnUiThread(java.lang.Runnable {
+//                    val minutes = (currentPos / 60000) % 60
+//                    val seconds = (currentPos / 1000) % 60
+//                    val milisec = currentPos % 1000
+//
+//                    val timeString = String.format("%02d:%02d:%03d", minutes, seconds, milisec)
+//                    findViewById<TextView>(R.id.textCurrentTime).text = timeString
+//                }
+//                )
+            }
+        }).start()
+    }
     private fun stopRecording() {
         mediaRecorder.apply {
             stop()
