@@ -28,11 +28,13 @@ class RecordVideoActivity : AppCompatActivity() {
     val REQUEST_READ_STORAGE = 2
 
     lateinit var arrayAdapter : ArrayAdapter<String>
-    lateinit var listStr: MutableList<String>
+    lateinit var listTitles: MutableList<String>
+    lateinit var listIds: MutableList<String>
     lateinit var listView: ListView
 
     fun getAll() {
-        listStr = mutableListOf<String>()
+        listTitles = mutableListOf<String>()
+        listIds = mutableListOf<String>()
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val contentResolver = contentResolver
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, null)
@@ -46,7 +48,8 @@ class RecordVideoActivity : AppCompatActivity() {
             do {
                 val itemId: Long = cursor.getLong(idColumn)
                 val itemTitle: String = cursor.getString(titleColumn)
-                listStr.add("$itemId")
+                listIds.add("$itemId")
+                listTitles.add("$itemTitle")
             } while (cursor.moveToNext())
         }
         cursor?.close()
@@ -63,13 +66,13 @@ class RecordVideoActivity : AppCompatActivity() {
             getAll()
 
             arrayAdapter =
-                ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, listStr)
+                ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, listTitles)
             listView.adapter = arrayAdapter
 
             listView.setOnItemClickListener(OnItemClickListener { arg0, arg1, position, arg3 ->
                 val intent = Intent(this, PlayVideoActivity::class.java)
                 var bundle = Bundle()
-                bundle.putString("title", listStr[position])
+                bundle.putString("title", listIds[position])
                 intent.putExtras(bundle)
                 startActivity(intent)
             })
