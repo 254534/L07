@@ -12,8 +12,15 @@ import android.widget.ListView
 import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.widget.AdapterView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import android.widget.Toast
+
+import android.widget.AdapterView.OnItemClickListener
+
+
+
 
 
 class RecordVideoActivity : AppCompatActivity() {
@@ -39,7 +46,7 @@ class RecordVideoActivity : AppCompatActivity() {
             do {
                 val itemId: Long = cursor.getLong(idColumn)
                 val itemTitle: String = cursor.getString(titleColumn)
-                listStr.add("$itemId - $itemTitle")
+                listStr.add("$itemId")
             } while (cursor.moveToNext())
         }
         cursor?.close()
@@ -58,6 +65,15 @@ class RecordVideoActivity : AppCompatActivity() {
             arrayAdapter =
                 ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, listStr)
             listView.adapter = arrayAdapter
+
+            listView.setOnItemClickListener(OnItemClickListener { arg0, arg1, position, arg3 ->
+                val intent = Intent(this, PlayVideoActivity::class.java)
+                var bundle = Bundle()
+                bundle.putString("title", listStr[position])
+                intent.putExtras(bundle)
+                startActivity(intent)
+            })
+
         }
         else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_STORAGE)
