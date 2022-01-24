@@ -24,7 +24,6 @@ import android.widget.AdapterView.OnItemClickListener
 
 
 class RecordVideoActivity : AppCompatActivity() {
-    val REQUEST_VIDEO_CAPTURE = 1
     val REQUEST_READ_STORAGE = 2
 
     lateinit var arrayAdapter : ArrayAdapter<String>
@@ -80,18 +79,6 @@ class RecordVideoActivity : AppCompatActivity() {
         }
         else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_STORAGE)
-        }
-
-
-        findViewById<Button>(R.id.buttonRecordVideo).setOnClickListener {
-            var intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-            intent.resolveActivity(packageManager)
-            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
-
-//            getAll()
-//            arrayAdapter =
-//                ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, listStr)
-//            listView.adapter = arrayAdapter
         }
     }
 }

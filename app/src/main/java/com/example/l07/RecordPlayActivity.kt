@@ -77,6 +77,7 @@ class RecordPlayActivity : AppCompatActivity() {
 
             recordStop.isEnabled = false
             playStop.isEnabled = false
+            playPause.isEnabled = false
 
             recordStart.setOnClickListener {
                 startRecording()
@@ -153,7 +154,9 @@ class RecordPlayActivity : AppCompatActivity() {
     }
 
     private fun pausePlaying() {
-        mediaPlayer!!.pause()
+        if(mediaPlayer != null) {
+            mediaPlayer!!.pause()
+        }
     }
 
     private fun setupProgressBar() {
@@ -168,16 +171,6 @@ class RecordPlayActivity : AppCompatActivity() {
             while (mediaPlayer != null && mediaPlayer!!.isPlaying) {
                 currentPos =  mediaPlayer!!.currentPosition
                 progressBar.progress = currentPos
-
-//                this@RecordPlayActivity.runOnUiThread(java.lang.Runnable {
-//                    val minutes = (currentPos / 60000) % 60
-//                    val seconds = (currentPos / 1000) % 60
-//                    val milisec = currentPos % 1000
-//
-//                    val timeString = String.format("%02d:%02d:%03d", minutes, seconds, milisec)
-//                    findViewById<TextView>(R.id.textCurrentTime).text = timeString
-//                }
-//                )
             }
         }).start()
     }
